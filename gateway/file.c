@@ -8,21 +8,10 @@
 #include <sys/types.h>  // ssize_t
 
 #include "buffer.h"
+#include "utility.h"
 
-void _setFDNonBlocking(int fd) {
-  int flags = fcntl(fd, F_GETFL);
-  fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-}
-
-void _setFDCanon(int fd) {
-  struct termios termios;
-  tcgetattr(fd, &termios);
-  termios.c_lflag |= ICANON;
-	tcsetattr(fd, TCSANOW, &termios);
-}
-
-FILE* _newSerialPortStream(char* path) {
-  FILE* file = fopen(path, "a");
+FILE* _newSerialPortStream(const char* path) {
+  FILE* file = fopen(path, "a+");
   if (file == NULL) {
     perror("_newSerialPortStream() ");
     return NULL;
@@ -30,13 +19,13 @@ FILE* _newSerialPortStream(char* path) {
 
   int fd = fileno(file);
 
-  _setFDNonBlocking(fd);
-  _setFDCanon(fd);
+  utility_fd_setNonBlock(fd);
+  utility_fd_setCanon(fd);
 
   return file;
 }
 
-File* file_newSerialPort(char* path) {
+File* file_newSerialPort(const char* path) {
   File* file = malloc(sizeof(File));
 
   file->stream = _newSerialPortStream(path);
@@ -76,10 +65,21 @@ FILE* _newServerSocketStream(const char* ipAddress, const char* portNumber) {
     exit(EXIT_FAILURE);
   }
 
-  _setFDNonBlocking(serverSocketFD);
+  utility_fd_setNonBlock(serverSocketFD);
 
   FILE* serverSocketStream = fdopen(serverSocketFD, "a");
   return serverSocketStream;
+}
+
+File* file_new_fd(int fd, const char* mode) {
+  File* file = malloc(sizeof(File));
+
+  FILE* stream = fdopen(fd, mode);
+
+  file->stream = stream;
+  file->readLineBuffer = buffer_new();
+
+  return file;
 }
 
 File* file_newServerSocketStream(const char* ipAddress, const char* portNumber) {

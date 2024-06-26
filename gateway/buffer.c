@@ -35,7 +35,7 @@ void buffer_delete(Buffer* buffer) {
 }
 
 void buffer_copyAssign(Buffer* buffer, Buffer* rhs) {
-  int count = MIN(buffer->capacity - 1, rhs->count);
+  int count = MIN((int)buffer->capacity - 1, rhs->count);
   memcpy(buffer->data, rhs->data, count);
   buffer->count = count;
   buffer->data[buffer->count] = '\0';

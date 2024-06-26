@@ -5,9 +5,9 @@ SRCS	= \
 			  file.c \
 			  protocol_dht.c \
 			  select_context.c \
-			  server.c \
+			  local_server.c \
 			  utility.c \
-			  gateway.c
+        main.c
 OBJS	= $(SRCS:.c=.o)
 
 CC			= clang
@@ -27,7 +27,7 @@ RM			= rm -f
 .PHONY:		all debug setdebug clean fclean re
 all:		$(NAME)
 
-debug:		clean setdebug $(CLIENT) $(SERVER)
+debug:		clean setdebug $(NAME)
 setdebug:
 			$(eval DEBUG_OPTION = -g)
 
