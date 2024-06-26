@@ -3,6 +3,10 @@
 #include <stdlib.h> // malloc(), free()
 
 Template* template_new() {
+  return template_new_argument(defaultArgument);
+}
+
+Template* template_new_argument(Argument argument) {
   Template* template = malloc(sizeof(template));
   return template;
 }

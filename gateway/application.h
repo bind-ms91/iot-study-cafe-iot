@@ -1,9 +1,17 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include "server.h"
+
 typedef struct application {
   char* ipAddress;
   char* portNumber;
+
+  char* gatewayServerPortNumber;
+  Server* gatewayServer;
+  int gatewayClientFD;
+
+  SelectContext* selectContext;
 } Application;
 
 Application* application_new();
