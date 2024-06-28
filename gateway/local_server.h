@@ -16,5 +16,6 @@ LocalServer* localServer_new_listenPortNumber(const char* listenPortNumber);
 void localServer_delete(LocalServer* localServer);
 
 int localServer_accept(LocalServer* localServer);
+void localServer_closeClientSocketFile(LocalServer* localServer);
 
 #endif  // LOCAL_SERVER_H

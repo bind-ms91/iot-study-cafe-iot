@@ -15,7 +15,7 @@ Application* application_new() {
 
   SelectContext* const selectContext = selectContext_new();
 
-  const char* localServerPortNumber = "9876";  // read from configuration.ini
+  const char* localServerPortNumber = "9875";  // read from configuration.ini
   LocalServer* localServer = localServer_new_listenPortNumber(localServerPortNumber);
 
   selectContext_readFDSet_add(selectContext, localServer->listenSocketFD);
@@ -32,13 +32,18 @@ void application_delete(Application* application) {
   free(application);
 }
 
-void  _localServer_accept(Application* application) {
+void _localServer_accept(Application* application) {
   const int gatewayClientFD = localServer_accept(application->localServer);
   if (gatewayClientFD == -1) {
     return;
   }
 
   selectContext_readFDSet_add(application->selectContext, gatewayClientFD);
+}
+
+void _remoteClient_close(Application* application) {
+  selectContext_readFDSet_remove(application->selectContext, application->localServer->clientSocketFD);
+  localServer_closeClientSocketFile(application->localServer);
 }
 
 void _loop(Application* application) {
@@ -50,18 +55,16 @@ void _loop(Application* application) {
         _localServer_accept(application);
       }
     }
-    else if (selectContext_isSet(application->selectContext, application->localServer->clientSocketFD)) {
-//      if (read) {
+
+    if (selectContext_isSet(application->selectContext, application->localServer->clientSocketFD)) {
       char* readLineReturn = file_readLine(application->localServer->clientSocketFile);
       if (readLineReturn == NULL) {
+        _remoteClient_close(application);
         continue;
       }
+
       Buffer* const readLineBuffer = application->localServer->clientSocketFile->readLineBuffer;
       write(1, readLineBuffer->data, readLineBuffer->count);
-//      }
-//      else if (connection broken) {
-//        close();
-//      }
     }
 
     sleep(1);

@@ -6,6 +6,7 @@
 #include <string.h> // memset()
 #include <arpa/inet.h>  // struct socketaddr_in
 #include <sys/types.h>  // ssize_t
+#include <sys/errno.h>  // ETIMEDOUT
 
 #include "buffer.h"
 #include "utility.h"
@@ -100,9 +101,13 @@ void file_delete(File* file) {
 char* file_readLine(File* file) {
   ssize_t numberRead = getline(&file->readLineBuffer->data, &file->readLineBuffer->capacity, file->stream);
   if (numberRead == -1) {
+    if (errno == ETIMEDOUT) {
+      return NULL;
+    }
+
     perror("file_getline()");
-    printf("  stream : %p\n", file->stream);
-    printf("  fd : %d\n", fileno(file->stream));
+    fprintf(stderr, "  stream : %p\n", file->stream);
+    fprintf(stderr, "  fd : %d\n", fileno(file->stream));
     exit(EXIT_FAILURE);
   }
   else {

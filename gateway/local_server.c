@@ -45,24 +45,36 @@ void localServer_delete(LocalServer* localServer) {
   free(localServer);
 }
 
-int localServer_accept(LocalServer* localServer) {
-  if (localServer->clientSocketFD != -1) {
-    return -1;
-  }
-
+int _accept(LocalServer* localServer) {
   struct sockaddr clientSocketAddress;
   socklen_t clientSocketAddressSize = sizeof(clientSocketAddress);
   const int clientSocketFD = accept(localServer->listenSocketFD,
       &clientSocketAddress,
       &clientSocketAddressSize);
-  fprintf(stderr, "accept clientSocketFD : %d\n", clientSocketFD);
   utility_exitIfMinusOne(clientSocketFD);
 
+  return clientSocketFD;
+}
+
+int localServer_accept(LocalServer* localServer) {
+  if (localServer->clientSocketFD != -1) {
+    return -1;
+  }
+
+  int clientSocketFD = _accept(localServer);
+  fprintf(stderr, "accepted clientSocketFD : %d\n", clientSocketFD);
+
   utility_fd_setNonBlock(clientSocketFD);
-  utility_fd_setCanon(clientSocketFD);
+//  utility_fd_setCanon(clientSocketFD);
 
   localServer->clientSocketFD = clientSocketFD;
   localServer->clientSocketFile = file_new_fd(clientSocketFD, "a+");
 
   return clientSocketFD;
+}
+
+void localServer_closeClientSocketFile(LocalServer* localServer) {
+  file_delete(localServer->clientSocketFile);
+  localServer->clientSocketFile = NULL;
+  localServer->clientSocketFD = -1;
 }
