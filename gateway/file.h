@@ -20,5 +20,6 @@ void file_delete(File* file);
 static inline int file_fd(File* file) { return fileno(file->stream); }
 
 char* file_readLine(File* file);
+void file_print(File* file, const char* message);
 
 #endif  // FILE_H

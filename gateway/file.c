@@ -115,3 +115,7 @@ char* file_readLine(File* file) {
     return file->readLineBuffer->data;
   }
 }
+
+void file_print(File* file, const char* message) {
+  fprintf(file->stream, "%s", message);
+}

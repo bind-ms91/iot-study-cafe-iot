@@ -15,7 +15,7 @@ Application* application_new() {
 
   SelectContext* const selectContext = selectContext_new();
 
-  const char* localServerPortNumber = "9875";  // read from configuration.ini
+  const char* localServerPortNumber = "9873";  // read from configuration.ini
   LocalServer* localServer = localServer_new_listenPortNumber(localServerPortNumber);
 
   selectContext_readFDSet_add(selectContext, localServer->listenSocketFD);
@@ -65,6 +65,7 @@ void _loop(Application* application) {
 
       Buffer* const readLineBuffer = application->localServer->clientSocketFile->readLineBuffer;
       write(1, readLineBuffer->data, readLineBuffer->count);
+      file_print(application->localServer->clientSocketFile, "HTTP/1.1 200 OK\r\n");
     }
 
     sleep(1);

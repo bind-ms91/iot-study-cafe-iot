@@ -65,7 +65,7 @@ int localServer_accept(LocalServer* localServer) {
   fprintf(stderr, "accepted clientSocketFD : %d\n", clientSocketFD);
 
   utility_fd_setNonBlock(clientSocketFD);
-//  utility_fd_setCanon(clientSocketFD);
+  utility_fd_setCanon(clientSocketFD);
 
   localServer->clientSocketFD = clientSocketFD;
   localServer->clientSocketFile = file_new_fd(clientSocketFD, "a+");
