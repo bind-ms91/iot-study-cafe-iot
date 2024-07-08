@@ -20,7 +20,8 @@ public :
   void closeClientSocket(int fd);
 
   const std::string* read(int fd);
-  void write(int fd, const std::string& string = "");
+  void appendWriteBuffer(int fd, const std::string& string = "");
+  void write(int fd);
 
 private :
   int _listenSocketFD;

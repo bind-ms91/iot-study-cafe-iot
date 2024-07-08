@@ -12,6 +12,10 @@ public :
   bool readFDSet_isSet(int fd) const;
   void readFDSet_remove(int fd);
 
+  void writeFDSet_add(int fd);
+  bool writeFDSet_isSet(int fd) const;
+  void writeFDSet_remove(int fd);
+
   void select();
 
 

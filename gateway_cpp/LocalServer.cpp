@@ -26,7 +26,7 @@ int _listen(const std::string& portNumber) {
       sizeof(localServerSocketAddress));
   exitIf(bindReturn == -1);
 
-  fprintf(stderr, "listen listenSocketFD : %d\n", listenSocketFD);
+  fprintf(stderr, "[listen listenSocketFD : %d]\n", listenSocketFD);
 
   listen(listenSocketFD, 5);
 
@@ -61,7 +61,7 @@ int LocalServer::accept() {
     return -1;
   }
 
-  fprintf(stderr, "accepted clientSocketFD : %d\n", clientSocketFD);
+  fprintf(stderr, "[accepted clientSocketFD : %d]\n", clientSocketFD);
 
   FD::setNonBlock(clientSocketFD);
   FD::setCanon(clientSocketFD);
@@ -88,8 +88,10 @@ const std::string* LocalServer::read(int fd) {
   return &stream.readBuffer();
 }
 
-void LocalServer::write(int fd, const std::string& string) {
-  Stream& stream = _clientSocketFDStreamMap[fd];
-  stream.appendWriteBuffer(string);
-  stream.write();
+void LocalServer::appendWriteBuffer(int fd, const std::string& string) {
+  _clientSocketFDStreamMap[fd].appendWriteBuffer(string);
+}
+
+void LocalServer::write(int fd) {
+  _clientSocketFDStreamMap[fd].write();
 }

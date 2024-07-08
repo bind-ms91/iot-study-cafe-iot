@@ -16,8 +16,8 @@ Select::Select() {
 void Select::readFDSet_add(int fd) {
   FD_SET(fd, &_readFDSetReserve);
 
-  if (fd == _nfds) {
-    ++_nfds;
+  if (fd >= _nfds) {
+    _nfds = fd + 1;
   }
 }
 
@@ -27,9 +27,22 @@ bool Select::readFDSet_isSet(int fd) const {
 
 void Select::readFDSet_remove(int fd) {
   FD_CLR(fd, &_readFDSetReserve);
-  if (fd == _nfds - 1) {
-    --_nfds;
+}
+
+void Select::writeFDSet_add(int fd) {
+  FD_SET(fd, &_writeFDSetReserve);
+
+  if (fd >= _nfds) {
+    _nfds = fd + 1;
   }
+}
+
+bool Select::writeFDSet_isSet(int fd) const {
+  return FD_ISSET(fd, &_writeFDSet);
+}
+
+void Select::writeFDSet_remove(int fd) {
+  FD_CLR(fd, &_writeFDSetReserve);
 }
 
 void Select::select() {

@@ -27,7 +27,7 @@ void Application::launch() {
 void Application::_accept() {
   const int localServerClientSocketFD = _localServer.accept();
   if (localServerClientSocketFD == -1) {
-    fprintf(stderr, "local server accept failed");
+    fprintf(stderr, "[local server accept failed]\n");
 
     return;
   }
@@ -40,7 +40,7 @@ void Application::_loop() {
     _select.select();
 
     if (_select.readFDSet_isSet(_localServer.listenSocketFD())) {
-      fprintf(stderr, "listen socket fd is set\n");
+      fprintf(stderr, "[listen socket fd is set]\n");
 
       _accept();
     }
@@ -51,7 +51,7 @@ void Application::_loop() {
       ++it;
 
       if (_select.readFDSet_isSet(fd)) {
-        fprintf(stderr, "read fd %d is set\n", fd);
+        fprintf(stderr, "[read fd %d is set]\n", fd);
 
         const std::string* readMessage = _localServer.read(fd);
         if (readMessage == NULL) {
@@ -60,7 +60,15 @@ void Application::_loop() {
         }
 
         printf("%s\n", readMessage->c_str());
-        _localServer.write(fd, "HTTP/1.1 200 OK\r\n");
+        _localServer.appendWriteBuffer(fd, "HTTP/1.1 200 OK\r\n");
+        _select.writeFDSet_add(fd);
+      }
+
+      if (_select.writeFDSet_isSet(fd)) {
+        fprintf(stderr, "[write fd %d is set]\n", fd);
+
+        _localServer.write(fd);
+        _select.writeFDSet_remove(fd);
       }
     }
 

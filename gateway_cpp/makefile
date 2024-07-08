@@ -15,8 +15,9 @@ SRCS        =	Utility.cpp \
               Application.cpp \
               Select.cpp \
               LocalServer.cpp \
-              main.cpp \
-              Stream.cpp
+              Stream.cpp \
+              Http.cpp \
+              main.cpp
 
 OBJS        = $(SRCS:.cpp=.o)
 

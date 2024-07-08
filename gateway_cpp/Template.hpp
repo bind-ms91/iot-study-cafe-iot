@@ -13,5 +13,4 @@ private :
 
 };
 
-
 #endif  // TEMPLATE_HPP

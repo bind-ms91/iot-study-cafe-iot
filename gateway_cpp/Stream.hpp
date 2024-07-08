@@ -14,6 +14,8 @@ public :
   ssize_t read();
   ssize_t write();
 
+  bool isWriteBuffer();
+
 private :
   int _fd;
 
