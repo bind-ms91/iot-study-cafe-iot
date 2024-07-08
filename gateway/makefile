@@ -34,7 +34,7 @@ setdebug:
 clean:
 			$(RM) $(OBJS)
 fclean:		clean
-			$(RM) $(CLIENT) $(SERVER)
+			$(RM) $(NAME)
 re:			fclean all
 
 
